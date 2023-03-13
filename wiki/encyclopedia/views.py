@@ -3,30 +3,29 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django import forms
 from django.urls import reverse
+from django.db import models
 
 from . import util
 # use a class
-def searchbar(request, name):
-    
+
+def searchbar(request):
     if request.method == "POST":
+        files = util.list_entries()
         query = request.POST.get("q")
-        util.get_entry(name)
-        possible_querys = {
-            "name": name
-        }
-        for i in possible_querys:
-            if query in possible_querys[i]:
-                return render(request, f"{query}.md")
-            else:
-                return HttpResponseRedirect("results")
-    else: 
-        query = ""
-    return query
+        util.get_entry(query)
+        if query in files:
+            return render(request, f"{query}.md")
+        else:
+            return HttpResponseRedirect("results")
+        
+    
+    return render(request, "encyclopedia/error.html")
+
+
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries(),
-        "query": entry
+        "entries": util.list_entries()
     })
     
 def entrys(request, name):
@@ -39,4 +38,17 @@ def entrys(request, name):
 
     
 def results(request):
-    return render(request, "encyclopedia/error.html")
+    return render(request, "encyclopedia/search.html")
+
+
+# class searchbar:
+
+#     def __init__(self, query):
+#         self.query = query
+    
+
+#     def get_info(self):
+#         return self.query 
+
+
+

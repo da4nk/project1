@@ -13,17 +13,12 @@
             <div class="sidebar col-lg-2 col-md-3">
 
                 <h2>Wiki</h2>
-                {% if query %}
-                <form action="{% url 'searchbar' query %}" method="post">
+                <form action="{% url 'searchbar' %}" method="post">
                     {% csrf_token %}
                     <input type="text" name = "q" placeholder="Search Encyclopedia">
                 </form>
-                {% else %}
-                <form action="{% url 'searchbar' %}" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="q" placeholder="Search Encyclopedia">
-                </form>
-                {% endif%}
+
+           
                 <div>
                     <a href="{% url 'index' %}">Home</a>
                 </div>
