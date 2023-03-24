@@ -1,0 +1,44 @@
+{% extends "encyclopedia/layout.html" %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block body %}
+    Edit Page
+    <form action= "{% url 'edit'  %}" method="get">
+        {% csrf_token %}
+        {%if title in files %}
+        <div>
+            <style>
+                .error:hover
+                {
+                    cursor: pointer;
+                }
+            </style>
+            <p class = "text"> Title Name Already exists click the x to dismiss </p>
+            <span class = "error" aria-hidden="true">&times;</span>
+            <script>
+                const error = document.querySelector('.error');
+                const text = document.querySelector('.text');
+                error.addEventListener('click', function()
+                {
+                    error.remove();
+                    text.remove();
+                });
+            </script>
+
+        </div>
+        {%endif%}
+        <div>
+            <textarea class = "form-control" placeholder = "Title" name="title" data-provide="markdown" style = "width: 50%; height: 60px;" cols="30" rows="10"></textarea>
+        </div>
+        <div>
+            <textarea  placeholder = "## Use Markdown For Your Content" class = "form-control"name="content" id = "content" data-provide="markdown" style = "width: 70%; height: 50%;" cols="30" rows="15">{{ content }}</textarea>
+        </div>
+
+        <div>
+            <input type="submit" value="Save">
+        </div>
+    </form>
+{% endblock %}

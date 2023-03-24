@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.db import models
 import markdown2 as mark
 import random
+from urllib.parse import unquote
+
 
 from . import util
 
@@ -68,31 +70,33 @@ def index(request):
     })
     
 def entrys(request, name):
+    name = unquote(name.replace('_', ' '))
     files = util.list_entries()
     util.get_entry(name)
     name = name.lower()
-    files = [f.lower() for f in files]
-    flag = True
-    if request.method == "GET":
-        for file in files:
-            if name == file:
-                flag = False
-                with open(f"entries/{name}.md", "r") as f:
-                    content = f.read()
-
-                content = mark.markdown(content)
-
-        if flag == False:
-            return render(request, "encyclopedia/entry.html",
-                        {
-                            "title": name,
-                            "content": content
-                        })
-            
-        return render(request, "encyclopedia/error.html")
-    else:
-        return render(request, "encyclopedia/error.html")
     
+    files = [f.lower() for f in files]
+    files = [unquote(f) for f in files]
+    flag = True
+    for file in files:
+        
+        if name == unquote(file):
+            flag = False
+
+            with open(f"entries/{name}.md", "r") as f:
+                content = f.read()
+
+            content = mark.markdown(content)
+
+    if flag == False:
+        return render(request, "encyclopedia/entry.html",
+                    {
+                        "title": name,
+                        "content": content
+                    })
+        
+    return render(request, "encyclopedia/error.html")
+
     
 def create(request):
     if request.method == "POST":
@@ -126,7 +130,19 @@ def create(request):
 
 
 def edit(request):
-    return (request, "entry.html")
+    files = util.list_entries()
+    files = [f.lower() for f in files]
+    
+    if request.method == "GET":
+        for file in files:
+            with open(f"entries/{file}.md", 'r') as f:
+                content = f.read()
+
+                return render(request, "encyclopedia/edit.html",
+                                {
+                            "content": content
+                                })
+    return render(request, "encyclopedia/error.html")
 
 
 
