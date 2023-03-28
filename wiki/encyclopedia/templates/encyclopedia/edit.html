@@ -6,9 +6,10 @@
 {% endblock %}
 {% block body %}
     Edit Page
-    <form action= "{% url 'edit'  %}" method="get">
+    <form action= "{% url 'edit' result %}" method="post">
         {% csrf_token %}
-        {%if title in files %}
+
+        {%if title in files or not title%}
         <div>
             <style>
                 .error:hover
@@ -16,7 +17,7 @@
                     cursor: pointer;
                 }
             </style>
-            <p class = "text"> Title Name Already exists click the x to dismiss </p>
+            <p class = "text"> Title Name Already exists click the x to dismiss or you havent put a title for this entry </p>
             <span class = "error" aria-hidden="true">&times;</span>
             <script>
                 const error = document.querySelector('.error');
@@ -31,10 +32,10 @@
         </div>
         {%endif%}
         <div>
-            <textarea class = "form-control" placeholder = "Title" name="title" data-provide="markdown" style = "width: 50%; height: 60px;" cols="30" rows="10"></textarea>
+            <textarea  class = "form-control" placeholder = "Title" name="input-title" data-provide="markdown" style = "width: 50%; height: 60px;" cols="30" rows="10">{{ title }}</textarea>
         </div>
         <div>
-            <textarea  placeholder = "## Use Markdown For Your Content" class = "form-control"name="content" id = "content" data-provide="markdown" style = "width: 70%; height: 50%;" cols="30" rows="15">{{ content }}</textarea>
+            <textarea  placeholder = "## Use Markdown For Your Content" class = "form-control"name="input-content" id = "content" data-provide="markdown" style = "width: 70%; height: 50%;" cols="30" rows="15">{{ content.strip|safe }}</textarea>
         </div>
 
         <div>

@@ -7,7 +7,7 @@
 
 
 {% block body %}
-    <a href="{% url 'edit'  %}">Edit Page</a>
+    <a href="{% url 'edit' result %}">Edit Page</a>
     {%autoescape off%}
     {{ content }}
     {% endautoescape %}
