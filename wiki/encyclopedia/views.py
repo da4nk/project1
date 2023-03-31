@@ -80,7 +80,6 @@ def entrys(request, name):
     files = [f.lower() for f in files]   
     flag = True
     for file in files:
-        
         if name == file:
             flag = False
 
@@ -88,6 +87,7 @@ def entrys(request, name):
                 content = f.read()
 
             content = mark.markdown(content)
+            break
 
     if flag == False:
         if name:
@@ -95,7 +95,6 @@ def entrys(request, name):
             global result 
             result = send_data(name)
             edit(request, result)
-            print(result)
             return render(request, "encyclopedia/entry.html",
                         {
                             "title": name,
@@ -142,22 +141,22 @@ def create(request):
     return render(request, "encyclopedia/newpage.html")
 
 
+
+           
 def edit(request, result):
-    
-    files = util.list_entries()
-    files = [f.lower() for f in files]
-  
+
+    title = request.GET.get('input-title')
+
     if request.method == "POST":
-        
-        with open(f'entries/{result}.md', 'w') as file:
+        new_title = os.rename(f"entries/{result}", f"entries/{title}")
+
+        with open(f"entries/{new_title}.md", "r") as f:
+            content = f.read()
+        with open(f'entries/{new_title}.md', 'w') as file:
             input_content = request.POST.get('input-content')
             content = file.write(input_content)
-            
-        with open(f"entries/{result}.md", "r") as f:
-            
-            
-            content = f.read()
-        content = mark.markdown(content)
+        with open(f"entries/{new_title}.md", "r") as f:
+            content = f.read().encode()
 
         return render(request, "encyclopedia/entry.html",
                         {
@@ -186,16 +185,16 @@ def random_page(request):
     files = util.list_entries()
     title = random.choice(files)
 
-    for i in range(len(files)):
-        with open(f"entries/{(title)}.md", 'r') as file:
-            content = file.read()
-        content = mark.markdown(content)
+    with open(f"entries/{(title)}.md", 'r') as file:
+        content = file.read()
+    content = mark.markdown(content)
 
 
     return render(request, "encyclopedia/entry.html",
                   {
                     "title": title,
-                    "content": content
+                    "content": content,
+                    "result": title
                   })
 
-        
+    
