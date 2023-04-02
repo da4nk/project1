@@ -7,7 +7,7 @@ from django.db import models
 import markdown2 as mark
 import random
 from urllib.parse import unquote
-
+import os
 
 from . import util
 
@@ -34,7 +34,6 @@ def searchbar(request):
         if query:
             for i in range(len(files)):
                 if query == files[i]:
-                    print(files[i])
                     with open(f"entries/{query}.md", "r") as f:
                         content = f.read()
 
@@ -131,54 +130,93 @@ def create(request):
                             content = f.read()
 
                         content = mark.markdown(content)
-                    return render(request, "encyclopedia/entry.html",
-                                {
-                                    "title": title,
-                                    "content": content
-                                })
-                        
+                        return render(request, "encyclopedia/entry.html",
+                                    {
+                                        "title": title,
+                                        "content": content,
+                                        "result": title
+                                    })
+                            
             
     return render(request, "encyclopedia/newpage.html")
 
 
 
-           
-def edit(request, result):
 
-    title = request.GET.get('input-title')
+
+def edit(request, result):
+    global data
 
     if request.method == "POST":
-        new_title = os.rename(f"entries/{result}", f"entries/{title}")
+        # get list of files
+        files = util.list_entries()
+        
 
-        with open(f"entries/{new_title}.md", "r") as f:
-            content = f.read()
-        with open(f'entries/{new_title}.md', 'w') as file:
-            input_content = request.POST.get('input-content')
-            content = file.write(input_content)
-        with open(f"entries/{new_title}.md", "r") as f:
-            content = f.read().encode()
+        # deal with case sensitivity
+        files = [f.lower() for f in files]
+
+
+        title = request.POST.get('input-title')        
+        prevtitle = request.POST.get('prev-title')   
+
+
+        # open the file in binary mode and read it
+        for i in files:
+            with open(f"entries/{prevtitle}.md", "rb") as f:
+                content = f.read()
+            # write the file in binary to newlines being converted 
+            with open(f'entries/{prevtitle}.md', 'wb') as file:
+                # convert the user input to binary for writing 
+                input_content = request.POST.get('input-content').encode('utf-8')
+                content = file.write(input_content)
+
+            # open read file and decode it 
+            with open(f"entries/{prevtitle}.md", "rb") as f:
+                content = f.read().decode('utf-8')
+            content = mark.markdown(content)
+            break
+
+
+
+        # rename file after each save
+        # search for the title in the list
+        
+
+        try:    
+            util.get_entry(prevtitle)
+            i = files.index(prevtitle)
+            os.rename(f'entries/{files[i]}.md', f'entries/{title}.md')
+            new_title = title
+            result = new_title   
+        except:
+            util.get_entry(prevtitle)
+            i = files.index(prevtitle)
+            os.rename(f'entries/{files[i]}.md', f'entries/{title}.md')
+            new_title = title        
+        result = new_title
+        
 
         return render(request, "encyclopedia/entry.html",
                         {
             "content": content,
-            "title": result,
+            "title": new_title,
             "result": result 
 
                             })
     else:
         
-            
-            with open(f"entries/{result}.md", "r") as f:
-            
-            
-                content = f.read()
-            
-            return render(request, "encyclopedia/edit.html",
-            {
-                "content": content,
-                "result": result,
-                "title": result
-            })
+
+        with open(f"entries/{result}.md", "r") as f:
+        
+        
+            content = f.read()
+        
+        return render(request, "encyclopedia/edit.html",
+        {
+            "content": content,
+            "result": result,
+            "title": result
+        })
 
 
 def random_page(request):

@@ -32,10 +32,11 @@
         </div>
         {%endif%}
         <div>
+            <input type="hidden" name="prev-title" value = "{{result}}" >
             <textarea  class = "form-control" placeholder = "Title" name="input-title" data-provide="markdown" style = "width: 50%; height: 60px;" cols="10" rows="1" maxlength="15">{{ title }}</textarea>
         </div>
         <div>
-            <textarea  placeholder = "## Use Markdown For Your Content" class = "form-control"name="input-content"id="content"data-provide="markdown"style="width:70%;height: 50%;" cols="30"rows="15">{{content}}</textarea>
+            <textarea  placeholder = "## Use Markdown For Your Content" class = "form-control"name="input-content"id="content"data-provide="markdown"style="width:70%;height: 50%;" cols="30"rows="15">{{content.strip|safe}}</textarea>
         </div>
 
         <div>
