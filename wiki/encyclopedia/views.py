@@ -145,9 +145,10 @@ def create(request):
 
 
 def edit(request, result):
-    global data
-
     if request.method == "POST":
+
+
+
         # get list of files
         files = util.list_entries()
         
@@ -157,7 +158,33 @@ def edit(request, result):
 
 
         title = request.POST.get('input-title')        
+        global prevtitle
         prevtitle = request.POST.get('prev-title')   
+
+
+
+
+
+
+        # rename file after each save
+        # search for the title in the list
+        
+
+        
+        util.get_entry(title)
+        for i in range(len(files)):
+            if prevtitle == files[i] and title != files[i]:
+
+                os.rename(f'entries/{files[i]}.md', f'entries/{title}.md')
+                break
+                
+                
+        new_title = title 
+        prevtitle = new_title
+        
+
+        
+
 
 
         # open the file in binary mode and read it
@@ -178,23 +205,8 @@ def edit(request, result):
 
 
 
-        # rename file after each save
-        # search for the title in the list
-        
 
-        try:    
-            util.get_entry(prevtitle)
-            i = files.index(prevtitle)
-            os.rename(f'entries/{files[i]}.md', f'entries/{title}.md')
-            new_title = title
-            result = new_title   
-        except:
-            util.get_entry(prevtitle)
-            i = files.index(prevtitle)
-            os.rename(f'entries/{files[i]}.md', f'entries/{title}.md')
-            new_title = title        
-        result = new_title
-        
+
 
         return render(request, "encyclopedia/entry.html",
                         {

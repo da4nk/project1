@@ -14,7 +14,7 @@
     <h1> Related results: </h1>
     <ul>
         {% for i in file %}
-        <li><a href="{% url 'entrys' i %}">{{ i }}</a></li>
+        <li><button class = "btn btn-outline-secondary"><a href="{% url 'entrys' i %}">{{ i }}</a></li></button>
         {% endfor%}
     </ul>
  

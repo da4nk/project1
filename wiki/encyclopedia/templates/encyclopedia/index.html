@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
-
+    <h1 class = "p-3 ml-5">All Pages</h1>
+    <div class="container-fluid">
     <ul>
         {% for entry in entries %}
 
-            <li><a href="{% url 'entrys' entry %}"> {{ entry }} </a></li>
+            <li class="list-group-item list-group-item-action pl-4"><button class = "btn btn-outline-secondary"><a href="{% url 'entrys' entry %}"> {{ entry }} </a></li></button>
         {% endfor %}
      
     </ul>
+    </div>
 
 {% endblock %}
